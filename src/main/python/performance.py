@@ -41,21 +41,18 @@ class Move(namedtuple("Move", "fromh jumped to")):
 
 class Coordinate(namedtuple("Coordinate", "row hole")):
     def legalMoves(self, rowCount, occupiedHoles):
-        # containsJumped = jumped in self.occupiedHoles
-        # containsTo = to in self.occupiedHoles
+        row = self.row
+        hole = self.hole
 
-        # if containsJumped and not containsTo:
-
-        # upward (needs at least 2 rows above)
         for rOff, hOff in [(2, 0), (-2, 0), (2, 2), (-2, -2), (0, 2), (0, -2)]:
-            newRow = self.row + rOff
-            newHole = self.hole + hOff
+            newRow = row + rOff
+            newHole = hole + hOff
             if newRow < 1 or newHole < 1 or newRow < newHole or newRow > rowCount:
                 continue
             t = (newRow, newHole)
             if t in occupiedHoles:
                 continue
-            j = (self.row + rOff // 2, self.hole + hOff // 2)
+            j = (row + rOff // 2, hole + hOff // 2)
             if j not in occupiedHoles:
                 continue
             yield Move(
