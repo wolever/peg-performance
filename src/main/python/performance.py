@@ -105,11 +105,9 @@ class GameState(object):
                         self.occupiedHoles.add(peg)
 
     def legalMoves(self):
-        legalMoves = []
         for c in self.occupiedHoles:
-            legalMoves.extend(c.legalMoves(self.rowCount, self.occupiedHoles))
-        return legalMoves
-    
+            for m in c.legalMoves(self.rowCount, self.occupiedHoles):
+                yield m
     
     def applyMove(self, move):
         return GameState(None, None, self, move)
@@ -149,20 +147,15 @@ def search(gs, moveStack):
         solutions.append(solutionCopy)
         
         gamesPlayed += 1
-        
         return
-    
-    legalMoves = gs.legalMoves()
-    
-    if (len(legalMoves) == 0):
-        gamesPlayed += 1
-        return
-    
-    for m in legalMoves:
+
+    for m in gs.legalMoves():
         nextState = gs.applyMove(m)
         moveStack.append(m)
         search(nextState, moveStack)
         moveStack.pop()
+
+    gamesPlayed += 1
 
 from time import time
 
