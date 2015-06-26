@@ -35,67 +35,51 @@
 
 from collections import namedtuple
 
-class Move(object):
-    def __init__(self, fromh, jumped, to):
-        self.fromh = fromh
-        self.jumped = jumped
-        self.to = to
-
+class Move(namedtuple("Move", "fromh jumped to")):
     def __str__(self):
         return str(self.fromh) + " -> " + str(self.jumped) + " -> " + str(self.to)
 
-
 class Coordinate(namedtuple("Coordinate", "row hole")):
     def possibleMoves(self, rowCount):
-        moves = []
-        
         # upward (needs at least 2 rows above)
         if (self.row >= 3):
             
             # up-left
             if (self.hole >= 3):
-                moves.append(Move(
-                        self,
+                yield (
                         Coordinate(self.row - 1, self.hole - 1),
-                        Coordinate(self.row - 2, self.hole - 2)))
+                        Coordinate(self.row - 2, self.hole - 2))
             
             # up-right
             if (self.row - self.hole >= 2):
-                moves.append(Move(
-                        self,
+                yield (
                         Coordinate(self.row - 1, self.hole),
-                        Coordinate(self.row - 2, self.hole)))
+                        Coordinate(self.row - 2, self.hole))
         
         # leftward (needs at least 2 pegs to the left)
         if (self.hole >= 3):
-            moves.append(Move(
-                    self,
+            yield (
                     Coordinate(self.row, self.hole - 1),
-                    Coordinate(self.row, self.hole - 2)))
+                    Coordinate(self.row, self.hole - 2))
         
         # rightward (needs at least 2 holes to the right)
         if (self.row - self.hole >= 2):
-            moves.append(Move(
-                    self,
+            yield (
                     Coordinate(self.row, self.hole + 1),
-                    Coordinate(self.row, self.hole + 2)))
+                    Coordinate(self.row, self.hole + 2))
 
         # downward (needs at least 2 rows below)
         if (rowCount - self.row >= 2):
             
             # down-left (always possible when there are at least 2 rows below)
-            moves.append(Move(
-                    self,
+            yield (
                     Coordinate(self.row + 1, self.hole),
-                    Coordinate(self.row + 2, self.hole)))
+                    Coordinate(self.row + 2, self.hole))
             
             # down-right (always possible when there are at least 2 rows below)
-            moves.append(Move(
-                    self,
+            yield (
                     Coordinate(self.row + 1, self.hole + 1),
-                    Coordinate(self.row + 2, self.hole + 2)))
-        
-        return moves
+                    Coordinate(self.row + 2, self.hole + 2))
     
     def __str__(self):
         return "r" + str(self.row) + "h" + str(self.hole)
@@ -141,13 +125,12 @@ class GameState(object):
         legalMoves = []
         for c in self.occupiedHoles:
             possibleMoves = c.possibleMoves(self.rowCount);
-            for m in possibleMoves:
-                containsJumped = m.jumped in self.occupiedHoles
-                containsTo = m.to in self.occupiedHoles
+            for jumped, to in possibleMoves:
+                containsJumped = jumped in self.occupiedHoles
+                containsTo = to in self.occupiedHoles
 
                 if containsJumped and not containsTo:
-                    legalMoves.append(m)
-                
+                    legalMoves.append(Move(c, jumped, to))
         return legalMoves
     
     
