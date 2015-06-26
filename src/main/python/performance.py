@@ -40,47 +40,30 @@ class Move(namedtuple("Move", "fromh jumped to")):
         return str(self.fromh) + " -> " + str(self.jumped) + " -> " + str(self.to)
 
 class Coordinate(namedtuple("Coordinate", "row hole")):
-    def possibleMoves(self, rowCount):
-        # upward (needs at least 2 rows above)
-        if (self.row >= 3):
-            
-            # up-left
-            if (self.hole >= 3):
-                yield (
-                        Coordinate(self.row - 1, self.hole - 1),
-                        Coordinate(self.row - 2, self.hole - 2))
-            
-            # up-right
-            if (self.row - self.hole >= 2):
-                yield (
-                        Coordinate(self.row - 1, self.hole),
-                        Coordinate(self.row - 2, self.hole))
-        
-        # leftward (needs at least 2 pegs to the left)
-        if (self.hole >= 3):
-            yield (
-                    Coordinate(self.row, self.hole - 1),
-                    Coordinate(self.row, self.hole - 2))
-        
-        # rightward (needs at least 2 holes to the right)
-        if (self.row - self.hole >= 2):
-            yield (
-                    Coordinate(self.row, self.hole + 1),
-                    Coordinate(self.row, self.hole + 2))
+    def legalMoves(self, rowCount, occupiedHoles):
+        # containsJumped = jumped in self.occupiedHoles
+        # containsTo = to in self.occupiedHoles
 
-        # downward (needs at least 2 rows below)
-        if (rowCount - self.row >= 2):
-            
-            # down-left (always possible when there are at least 2 rows below)
-            yield (
-                    Coordinate(self.row + 1, self.hole),
-                    Coordinate(self.row + 2, self.hole))
-            
-            # down-right (always possible when there are at least 2 rows below)
-            yield (
-                    Coordinate(self.row + 1, self.hole + 1),
-                    Coordinate(self.row + 2, self.hole + 2))
-    
+        # if containsJumped and not containsTo:
+
+        # upward (needs at least 2 rows above)
+        for rOff, hOff in [(2, 0), (-2, 0), (2, 2), (-2, -2), (0, 2), (0, -2)]:
+            newRow = self.row + rOff
+            newHole = self.hole + hOff
+            if newRow < 1 or newHole < 1 or newRow < newHole or newRow > rowCount:
+                continue
+            t = (newRow, newHole)
+            if t in occupiedHoles:
+                continue
+            j = (self.row + rOff // 2, self.hole + hOff // 2)
+            if j not in occupiedHoles:
+                continue
+            yield Move(
+                self,
+                Coordinate(*j),
+                Coordinate(*t),
+            )
+
     def __str__(self):
         return "r" + str(self.row) + "h" + str(self.hole)
 
@@ -124,13 +107,7 @@ class GameState(object):
     def legalMoves(self):
         legalMoves = []
         for c in self.occupiedHoles:
-            possibleMoves = c.possibleMoves(self.rowCount);
-            for jumped, to in possibleMoves:
-                containsJumped = jumped in self.occupiedHoles
-                containsTo = to in self.occupiedHoles
-
-                if containsJumped and not containsTo:
-                    legalMoves.append(Move(c, jumped, to))
+            legalMoves.extend(c.legalMoves(self.rowCount, self.occupiedHoles))
         return legalMoves
     
     
