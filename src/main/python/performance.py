@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 # 
 # performance.py
@@ -33,30 +33,17 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-class Move:
+class Move(object):
     def __init__(self, fromh, jumped, to):
         self.fromh = fromh
         self.jumped = jumped
         self.to = to
 
-    def get_fromh(self):
-        return self.fromh
-
-    def get_jumped(self):
-        return self.jumped
-
-    def get_to(self):
-        return self.to
-
-    fromh = property(get_fromh)
-    jumped = property(get_jumped)
-    to = property(get_to)
-
     def __str__(self):
         return str(self.fromh) + " -> " + str(self.jumped) + " -> " + str(self.to)
 
 
-class Coordinate:
+class Coordinate(object):
     def __init__(self, row, hole):
         if (hole < 1):
             raise RuntimeError, "Illegal hole number: " + hole + " < 1"
@@ -64,15 +51,6 @@ class Coordinate:
             raise RuntimeError, "Illegal hole number: " + hole + " on row " + row
         self.hole = hole
         self.row = row
-
-    def get_hole(self):
-        return self.hole
-
-    def get_row(self):
-        return self.row
-
-    hole = property(get_row)
-    row = property(get_hole)
 
     def possibleMoves(self, rowCount):
         moves = []
@@ -132,7 +110,7 @@ class Coordinate:
         return self.row == other.row and self.hole == other.hole
 
 
-class GameState:
+class GameState(object):
 
     def __init__(self, rows, emptyHole, initialState=None, applyMe=None):
 
