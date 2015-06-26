@@ -33,6 +33,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from collections import namedtuple
+
 class Move(object):
     def __init__(self, fromh, jumped, to):
         self.fromh = fromh
@@ -43,15 +45,7 @@ class Move(object):
         return str(self.fromh) + " -> " + str(self.jumped) + " -> " + str(self.to)
 
 
-class Coordinate(object):
-    def __init__(self, row, hole):
-        if (hole < 1):
-            raise RuntimeError, "Illegal hole number: " + hole + " < 1"
-        if (hole > row):
-            raise RuntimeError, "Illegal hole number: " + hole + " on row " + row
-        self.hole = hole
-        self.row = row
-
+class Coordinate(namedtuple("Coordinate", "row hole")):
     def possibleMoves(self, rowCount):
         moves = []
         
@@ -105,9 +99,6 @@ class Coordinate(object):
     
     def __str__(self):
         return "r" + str(self.row) + "h" + str(self.hole)
-
-    def __eq__(self, other):
-        return self.row == other.row and self.hole == other.hole
 
 
 class GameState(object):
