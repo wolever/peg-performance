@@ -40,11 +40,11 @@ class Move(namedtuple("Move", "fromh jumped to")):
         return str(self.fromh) + " -> " + str(self.jumped) + " -> " + str(self.to)
 
 class Coordinate(namedtuple("Coordinate", "row hole")):
-    def legalMoves(self, rowCount, occupiedHoles):
+    def legalMoves(self, rowCount, occupiedHoles, __moves=[(2, 0), (-2, 0), (2, 2), (-2, -2), (0, 2), (0, -2)]):
         row = self.row
         hole = self.hole
 
-        for rOff, hOff in [(2, 0), (-2, 0), (2, 2), (-2, -2), (0, 2), (0, -2)]:
+        for rOff, hOff in __moves:
             newRow = row + rOff
             newHole = hole + hOff
             if newRow < 1 or newHole < 1 or newRow < newHole or newRow > rowCount:
