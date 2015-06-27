@@ -84,10 +84,10 @@ class GameState(object):
             self.occupiedHoles.remove(applyMe.jumped)
 
             if applyMe.to in self.occupiedHoles:
-                raise RuntimeError, "Move is not consistent with game state: 'to' hole was occupied."
+                raise RuntimeError("Move is not consistent with game state: 'to' hole was occupied.")
 
             if (applyMe.to.row > self.rowCount or applyMe.to.row < 1):
-                raise RuntimeError, "Move is not legal because the 'to' hole does not exist: " + str(applyMe.to)
+                raise RuntimeError("Move is not legal because the 'to' hole does not exist: " + str(applyMe.to))
 
             self.occupiedHoles.add(applyMe.to)
 
@@ -161,6 +161,6 @@ gs = GameState(5, Coordinate(3, 2))
 search(gs, [])
 endTime = time()
 
-print "Games played:    %6d" % (gamesPlayed)
-print "Solutions found: %6d" % (len(solutions))
-print "Time elapsed:    %6dms" % ((endTime - startTime) * 1000)
+print("Games played:    %6d" % (gamesPlayed))
+print("Solutions found: %6d" % (len(solutions)))
+print("Time elapsed:    %6dms" % ((endTime - startTime) * 1000))
